@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pet Dragon Preview</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: #1e1e1e;
+        color: #ccc;
+        font:
+          13px system-ui,
+          sans-serif;
+      }
+
+      .panel {
+        width: 340px;
+        border: 1px solid #333;
+        background: #252526;
+      }
+
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #ddd;
+      }
+
+      .title .spacer {
+        flex: 1;
+      }
+
+      .title button {
+        display: flex;
+        padding: 3px;
+        border: none;
+        border-radius: 4px;
+        background: none;
+        color: #c5c5c5;
+        cursor: pointer;
+      }
+
+      .title button:hover {
+        background: #3a3a3a;
+        color: #fff;
+      }
+
+      .title > .icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      .icon {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .icon circle {
+        fill: currentColor;
+        stroke: none;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 200px;
+        border: 0;
+        resize: vertical;
+      }
+
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        max-width: 420px;
+      }
+
+      .tools button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border: 1px solid #3c3c3c;
+        border-radius: 4px;
+        background: #2d2d2d;
+        color: #ccc;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .tools button:hover {
+        border-color: #4a4a4a;
+        background: #373737;
+        color: #fff;
+      }
+
+      .tools .icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      .hint {
+        color: #888;
+        font-size: 12px;
+      }
+
+      .picker {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 6px 8px;
+        border-top: 1px solid #333;
+        background: #2b2b2c;
+      }
+
+      .picker[hidden] {
+        display: none;
+      }
+
+      .picker .row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .picker .dragonName {
+        width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .picker .swatch {
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 2px solid #222;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .picker .selected {
+        outline: 2px solid #fff;
+        outline-offset: 1px;
+      }
+
+      .picker input[type="color"] {
+        width: 24px;
+        height: 22px;
+        padding: 0;
+        border: none;
+        border-radius: 4px;
+        background: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <symbol id="iconChevron" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" /></symbol>
+        <symbol id="iconAdd" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" /></symbol>
+        <symbol id="iconTrash" viewBox="0 0 16 16">
+          <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5M7 7v4M9 7v4" />
+        </symbol>
+        <symbol id="iconPalette" viewBox="0 0 16 16">
+          <path
+            d="M8 2.5a5.5 5.5 0 1 0 0 11c1 0 1.3-.7 1-1.4-.4-.8.1-1.6 1-1.6h1.2a2.3 2.3 0 0 0 2.3-2.3C13.5 4.9 11 2.5 8 2.5z"
+          />
+          <circle cx="5.3" cy="7" r=".7" />
+          <circle cx="7.6" cy="5" r=".7" />
+          <circle cx="10.4" cy="5.8" r=".7" />
+        </symbol>
+        <symbol id="iconEdit" viewBox="0 0 16 16"><path d="M10.5 3l2.5 2.5L6 12.5 3 13l.5-3z" /></symbol>
+        <symbol id="iconFeed" viewBox="0 0 16 16">
+          <path d="M2.5 8.5h11a5.5 5.5 0 0 1-11 0zM5.5 6c0-1 1-1.2 1-2.2M8.5 6c0-1 1-1.2 1-2.2" />
+        </symbol>
+        <symbol id="iconHeart" viewBox="0 0 16 16">
+          <path d="M8 13.2S2.5 10 2.5 6.2A2.7 2.7 0 0 1 8 5a2.7 2.7 0 0 1 5.5 1.2C13.5 10 8 13.2 8 13.2z" />
+        </symbol>
+        <symbol id="iconFlame" viewBox="0 0 16 16">
+          <path
+            d="M8 2.5c.4 2-2.3 3.2-2.3 4.5 0-1-1.2-1.5-1.2-1.5S3.5 7.2 3.5 9a4.5 4.5 0 0 0 9 0c0-3-2.5-4.5-4.5-6.5zM8 13.5a1.8 1.8 0 0 1-1.8-1.8c0-1.3 1.8-2.2 1.8-2.2s1.8.9 1.8 2.2A1.8 1.8 0 0 1 8 13.5z"
+          />
+        </symbol>
+        <symbol id="iconStar" viewBox="0 0 16 16">
+          <path d="M8 2.5l1.7 3.5 3.8.5-2.8 2.7.7 3.8L8 11.2 4.6 13l.7-3.8-2.8-2.7 3.8-.5z" />
+        </symbol>
+        <symbol id="iconMoon" viewBox="0 0 16 16">
+          <path d="M12.8 10A5.5 5.5 0 0 1 6 3.2 5.5 5.5 0 1 0 12.8 10z" />
+        </symbol>
+        <symbol id="iconResize" viewBox="0 0 16 16">
+          <path d="M2.5 8h11M5 5.5L2.5 8 5 10.5M11 5.5L13.5 8 11 10.5" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <div class="panel">
+      <div class="title">
+        <svg class="icon"><use href="#iconChevron" /></svg>
+        <span>Pet Dragon</span>
+        <span class="spacer"></span>
+        <button id="addButton" title="Hatch a New Dragon">
+          <svg class="icon"><use href="#iconAdd" /></svg>
+        </button>
+        <button id="removeButton" title="Release a Dragon">
+          <svg class="icon"><use href="#iconTrash" /></svg>
+        </button>
+        <button id="recolorButton" title="Change Dragon Color">
+          <svg class="icon"><use href="#iconPalette" /></svg>
+        </button>
+        <button id="renameButton" title="Rename a Dragon">
+          <svg class="icon"><use href="#iconEdit" /></svg>
+        </button>
+      </div>
+      <div id="colorPicker" class="picker" hidden></div>
+      <iframe id="dragonFrame"></iframe>
+    </div>
+
+    <div class="tools">
+      <button id="feedButton">
+        <svg class="icon"><use href="#iconFeed" /></svg>Feed
+      </button>
+      <button id="playButton">
+        <svg class="icon"><use href="#iconHeart" /></svg>Play
+      </button>
+      <button id="fireButton">
+        <svg class="icon"><use href="#iconFlame" /></svg>Fire
+      </button>
+      <button id="levelButton">
+        <svg class="icon"><use href="#iconStar" /></svg>Level up
+      </button>
+      <button id="sleepButton">
+        <svg class="icon"><use href="#iconMoon" /></svg>Sleep
+      </button>
+      <button id="resizeButton">
+        <svg class="icon"><use href="#iconResize" /></svg>Resize
+      </button>
+    </div>
+    <div class="hint">Click a dragon to pet it · double-click the grass to drop food · hover for names</div>
+
+    <script src="../media/dragon.js"></script>
+    <script>
+      const colorNames = ["night", "emerald", "crimson", "sapphire", "amethyst", "gold"];
+      const dragonNames = ["Ember", "Pip", "Mochi", "Scorch", "Biscuit", "Nimbus", "Sprout", "Cinder"];
+      const maxDragons = 8;
+      const narrowWidth = "340px";
+      const wideWidth = "520px";
+
+      let dragonCounter = 0;
+
+      function createDragon(color) {
+        dragonCounter += 1;
+        return {
+          id: "dragon" + dragonCounter,
+          name: dragonNames[(dragonCounter - 1) % dragonNames.length],
+          color: color,
+        };
+      }
+
+      const petState = {
+        dragons: [createDragon("night"), createDragon("night"), createDragon("crimson")],
+        level: 3,
+        xp: 40,
+        hunger: 80,
+        happiness: 85,
+        energy: 90,
+      };
+
+      const getElement = (elementId) => document.getElementById(elementId);
+      const dragonFrame = getElement("dragonFrame");
+      const colorPicker = getElement("colorPicker");
+
+      function sendToView(message) {
+        dragonFrame.contentWindow.postMessage(message, "*");
+      }
+
+      function pushState() {
+        sendToView({
+          type: "state",
+          state: petState,
+          mood: { label: petState.energy < 20 ? "sleepy" : "joyful" },
+          xpNeeded: 100,
+        });
+      }
+
+      function sendAction(actionName, dragonId) {
+        sendToView({ type: "action", action: actionName, id: dragonId });
+      }
+
+      window.addEventListener("message", (messageEvent) => {
+        const message = messageEvent.data;
+        if (!message || messageEvent.source !== dragonFrame.contentWindow) {
+          return;
+        }
+        if (message.type === "ready") {
+          pushState();
+        } else if (message.type === "feed") {
+          sendAction("eat");
+          pushState();
+        } else if (message.type === "play") {
+          sendAction("play", message.id);
+          pushState();
+        }
+      });
+
+      const mediaUrl = new URL("../media/", location.href).href;
+      dragonFrame.srcdoc = `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; font-family: system-ui, sans-serif; color: #fff; background: #62a038; user-select: none; }
+      #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+      .label { position: absolute; transform: translate(-50%, -100%); pointer-events: none; white-space: nowrap; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 4px; background: rgba(40, 24, 10, 0.78); box-shadow: 0 0 0 1px #c89a5a; }
+      .label[hidden], .empty[hidden] { display: none; }
+      .empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 600; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="label" class="label" hidden></div>
+    <div id="empty" class="empty" hidden>No dragons here yet.<br />Click <b>+</b> above to hatch one.</div>
+    <script>window.acquireVsCodeApi = () => ({ postMessage: (message) => parent.postMessage(message, "*") });<\/script>
+    <script src="${mediaUrl}dragon.js"><\/script>
+    <script src="${mediaUrl}grass.js"><\/script>
+    <script src="${mediaUrl}scene.js"><\/script>
+  </body>
+</html>`;
+
+      function askName(promptMessage, suggestedName) {
+        let currentValue = suggestedName;
+        while (true) {
+          const enteredName = prompt(promptMessage, currentValue);
+          if (enteredName === null) {
+            return null;
+          }
+          if (enteredName.trim().length > 0 && enteredName.length <= 20) {
+            return enteredName.trim();
+          }
+          alert("Name must be 1–20 characters.");
+          currentValue = enteredName;
+        }
+      }
+
+      function setDragonColor(dragon, color) {
+        dragon.color = color;
+        pushState();
+        sendAction("hatch", dragon.id);
+        renderColorPicker();
+      }
+
+      function createSwatch(dragon, colorName) {
+        const swatchButton = document.createElement("button");
+        swatchButton.className = "swatch" + (dragon.color === colorName ? " selected" : "");
+        swatchButton.title = colorName;
+        swatchButton.style.background = Dragon.resolveTheme(colorName)[0];
+        swatchButton.onclick = () => setDragonColor(dragon, colorName);
+        return swatchButton;
+      }
+
+      function createCustomColorInput(dragon) {
+        const colorInput = document.createElement("input");
+        colorInput.type = "color";
+        colorInput.title = "Custom color";
+        colorInput.value = Dragon.resolveTheme(dragon.color)[0];
+        if (dragon.color.startsWith("#")) {
+          colorInput.className = "selected";
+        }
+        colorInput.oninput = () => {
+          dragon.color = colorInput.value;
+          pushState();
+        };
+        colorInput.onchange = () => setDragonColor(dragon, colorInput.value);
+        return colorInput;
+      }
+
+      function renderColorPicker() {
+        colorPicker.innerHTML = "";
+        if (petState.dragons.length === 0) {
+          colorPicker.textContent = "No dragons yet — click + to hatch one.";
+          return;
+        }
+        petState.dragons.forEach((dragon) => {
+          const pickerRow = document.createElement("div");
+          pickerRow.className = "row";
+          const nameText = document.createElement("span");
+          nameText.className = "dragonName";
+          nameText.textContent = dragon.name;
+          pickerRow.appendChild(nameText);
+          colorNames.forEach((colorName) => pickerRow.appendChild(createSwatch(dragon, colorName)));
+          pickerRow.appendChild(createCustomColorInput(dragon));
+          colorPicker.appendChild(pickerRow);
+        });
+      }
+
+      function refreshColorPicker() {
+        if (!colorPicker.hidden) {
+          renderColorPicker();
+        }
+      }
+
+      getElement("addButton").onclick = () => {
+        if (petState.dragons.length >= maxDragons) {
+          alert(`The meadow is full — ${maxDragons} dragons max.`);
+          return;
+        }
+        const usedNames = new Set(petState.dragons.map((dragon) => dragon.name));
+        const suggestedName = dragonNames.find((dragonName) => !usedNames.has(dragonName)) || "Dragon";
+        const chosenName = askName("Name your new dragon", suggestedName);
+        if (!chosenName) {
+          return;
+        }
+        const newDragon = createDragon(colorNames[Math.floor(Math.random() * colorNames.length)]);
+        newDragon.name = chosenName;
+        petState.dragons.push(newDragon);
+        pushState();
+        sendAction("hatch", newDragon.id);
+        refreshColorPicker();
+      };
+
+      getElement("removeButton").onclick = () => {
+        petState.dragons.pop();
+        pushState();
+        refreshColorPicker();
+      };
+
+      getElement("recolorButton").onclick = () => {
+        colorPicker.hidden = !colorPicker.hidden;
+        refreshColorPicker();
+      };
+
+      getElement("renameButton").onclick = () => {
+        if (petState.dragons.length === 0) {
+          return;
+        }
+        const dragonList = petState.dragons.map((dragon, position) => `${position + 1}. ${dragon.name}`).join("\n");
+        const chosenNumber =
+          petState.dragons.length === 1 ? "1" : prompt("Which dragon do you want to rename?\n" + dragonList, "1");
+        const chosenDragon = petState.dragons[parseInt(chosenNumber, 10) - 1];
+        if (!chosenDragon) {
+          return;
+        }
+        const newName = askName(`Rename ${chosenDragon.name}`, chosenDragon.name);
+        if (!newName) {
+          return;
+        }
+        chosenDragon.name = newName;
+        pushState();
+        sendAction("play", chosenDragon.id);
+        refreshColorPicker();
+      };
+
+      getElement("feedButton").onclick = () => sendAction("eat");
+      getElement("playButton").onclick = () => sendAction("play");
+      getElement("fireButton").onclick = () => sendAction("fire");
+
+      getElement("levelButton").onclick = () => {
+        petState.level += 1;
+        pushState();
+        sendAction("levelup");
+      };
+
+      getElement("sleepButton").onclick = () => {
+        petState.energy = petState.energy < 20 ? 90 : 10;
+        pushState();
+      };
+
+      getElement("resizeButton").onclick = () => {
+        const panel = document.querySelector(".panel");
+        panel.style.width = panel.style.width === wideWidth ? narrowWidth : wideWidth;
+      };
+    </script>
+  </body>
+</html>

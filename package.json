@@ -1,8 +1,8 @@
 {
   "name": "pet-dragon",
   "displayName": "Pet Dragon 🐉",
-  "description": "A cute animated pixel dragon companion that lives in your sidebar. Feed it, play with it, and watch it grow as you code.",
-  "version": "1.1.0",
+  "description": "Cute pixel-art night dragons that roam a grassy meadow in your Explorer. Hatch a whole herd, feed them, pet them and watch them grow as you code.",
+  "version": "1.2.0",
   "publisher": "sobatteknologi",
   "engines": {
     "vscode": "^1.84.0"
@@ -27,88 +27,118 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "petDragonContainer",
-          "title": "Pet Dragon",
-          "icon": "media/dragon-icon.svg"
-        }
-      ]
-    },
     "views": {
-      "petDragonContainer": [
+      "explorer": [
         {
           "type": "webview",
           "id": "petDragon.view",
           "name": "Pet Dragon",
-          "icon": "media/dragon-icon.svg"
+          "icon": "media/dragonIcon.svg"
         }
       ]
     },
     "commands": [
       {
-        "command": "petDragon.feed",
-        "title": "Feed the Dragon",
+        "command": "petDragon.add",
+        "title": "Hatch a New Dragon",
         "category": "Pet Dragon",
         "icon": "$(add)"
       },
       {
-        "command": "petDragon.play",
-        "title": "Play with the Dragon",
+        "command": "petDragon.remove",
+        "title": "Release a Dragon",
         "category": "Pet Dragon",
-        "icon": "$(star-full)"
+        "icon": "$(trash)"
+      },
+      {
+        "command": "petDragon.recolor",
+        "title": "Change Dragon Color",
+        "category": "Pet Dragon",
+        "icon": "$(symbol-color)"
+      },
+      {
+        "command": "petDragon.settings",
+        "title": "Pet Dragon Settings",
+        "category": "Pet Dragon",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "petDragon.feed",
+        "title": "Feed the Dragons",
+        "category": "Pet Dragon"
+      },
+      {
+        "command": "petDragon.play",
+        "title": "Play with the Dragons",
+        "category": "Pet Dragon"
       },
       {
         "command": "petDragon.breatheFire",
         "title": "Breathe Fire!",
-        "category": "Pet Dragon",
-        "icon": "$(flame)"
+        "category": "Pet Dragon"
       },
       {
         "command": "petDragon.rename",
-        "title": "Rename the Dragon",
-        "category": "Pet Dragon",
-        "icon": "$(edit)"
+        "title": "Rename a Dragon",
+        "category": "Pet Dragon"
       },
       {
         "command": "petDragon.reset",
-        "title": "Reset the Dragon",
-        "category": "Pet Dragon",
-        "icon": "$(debug-restart)"
+        "title": "Reset the Meadow",
+        "category": "Pet Dragon"
       },
       {
         "command": "petDragon.focus",
-        "title": "Show the Dragon",
+        "title": "Show the Dragons",
         "category": "Pet Dragon"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "petDragon.feed",
+          "command": "petDragon.add",
           "when": "view == petDragon.view",
           "group": "navigation@1"
         },
         {
-          "command": "petDragon.play",
+          "command": "petDragon.remove",
           "when": "view == petDragon.view",
           "group": "navigation@2"
         },
         {
-          "command": "petDragon.breatheFire",
+          "command": "petDragon.recolor",
           "when": "view == petDragon.view",
           "group": "navigation@3"
         },
         {
+          "command": "petDragon.settings",
+          "when": "view == petDragon.view",
+          "group": "navigation@4"
+        },
+        {
+          "command": "petDragon.feed",
+          "when": "view == petDragon.view",
+          "group": "1_care@1"
+        },
+        {
+          "command": "petDragon.play",
+          "when": "view == petDragon.view",
+          "group": "1_care@2"
+        },
+        {
+          "command": "petDragon.breatheFire",
+          "when": "view == petDragon.view",
+          "group": "1_care@3"
+        },
+        {
           "command": "petDragon.rename",
           "when": "view == petDragon.view",
-          "group": "1_actions@1"
+          "group": "2_manage@1"
         },
         {
           "command": "petDragon.reset",
           "when": "view == petDragon.view",
-          "group": "1_actions@2"
+          "group": "2_manage@2"
         }
       ]
     },
@@ -128,19 +158,24 @@
         "petDragon.color": {
           "type": "string",
           "enum": [
+            "night",
             "emerald",
             "crimson",
             "sapphire",
             "amethyst",
             "gold"
           ],
-          "default": "emerald",
-          "description": "The scale color of your dragon."
+          "default": "night",
+          "description": "Scale color for newly hatched dragons (use the color icon in the view title to recolor existing ones)."
         }
       }
     }
   },
   "scripts": {
-    "lint": "echo \"no linter configured\""
-  }
+    "format": "prettier --write \"**/*.{js,html,json}\"",
+    "makeIcon": "node scripts/makeIcon.js",
+    "previewSprite": "node scripts/previewSprite.js",
+    "previewScene": "node scripts/previewScene.js"
+  },
+  "license": "MIT"
 }
